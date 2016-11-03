@@ -5,24 +5,23 @@ class discr33t_aws::ec2 {
     region                   => 'us-east-1',
     availability_zone        => 'us-east-1a',
     subnet                   => [
-      'discr33t-privatezone01'
+      'discr33t-publiczone01-sn'
     ],
     security_groups          => [
-      'discr33t-default',
-      'discr33t-remoteaccess'
+      'discr33t-master-sg'
     ],
     image_id                 => 'ami-6d1c2007',
     key_name                 => 'discr33t',
     instance_type            => 't2.micro',
     monitoring               => false,
     ebs_optimized            => false,
-    iam_instance_profile_arn => 'arn:aws:iam::949402414914:instance-profile/Discr33tAdmin',
-    virtualization_type      => 'hvm',
+    tenancy                  => 'default',
     block_devices            => [
       {
         'delete_on_termination' => 'true',
-        'device_name'           => '/dev/sda1'
-      }
+        'device_name'           => '/dev/sda1',
+        'volume_size'           => '8',
+      },
     ],
   }
 
@@ -31,24 +30,67 @@ class discr33t_aws::ec2 {
     region                   => 'us-east-1',
     availability_zone        => 'us-east-1b',
     subnet                   => [
-      'discr33t-privatezone02'
+      'discr33t-publiczone02-sn'
     ],
     security_groups          => [
-      'discr33t-default',
-      'discr33t-remoteaccess'
+      'discr33t-master-sg'
     ],
     image_id                 => 'ami-6d1c2007',
     key_name                 => 'discr33t',
     instance_type            => 't2.micro',
     monitoring               => false,
     ebs_optimized            => false,
-    iam_instance_profile_arn => 'arn:aws:iam::949402414914:instance-profile/Discr33tAdmin',
-    virtualization_type      => 'hvm',
+    tenancy                  => 'default',
     block_devices            => [
       {
         'delete_on_termination' => 'true',
-        'device_name'           => '/dev/sda1'
-      }
+        'device_name'           => '/dev/sda1',
+        'volume_size'           => '8',
+      },
+    ],
+  }
+
+  ec2_instance { 'discr33t-slave02':
+    ensure            => running,
+    region            => 'us-east-1',
+    availability_zone => 'us-east-1a',
+    subnet            => [
+      'discr33t-privatezone01-sn'
+    ],
+    image_id          => 'ami-6d1c2007',
+    key_name          => 'discr33t',
+    instance_type     => 't2.micro',
+    monitoring        => false,
+    ebs_optimized     => false,
+    tenancy           => 'default',
+    block_devices     => [
+      {
+        'delete_on_termination' => 'true',
+        'device_name'           => '/dev/sda1',
+        'volume_size'           => '8',
+      },
+    ],
+  }
+
+  ec2_instance { 'discr33t-slave01':
+    ensure            => running,
+    region            => 'us-east-1',
+    availability_zone => 'us-east-1b',
+    subnet            => [
+      'discr33t-privatezone02-sn'
+    ],
+    image_id          => 'ami-6d1c2007',
+    key_name          => 'discr33t',
+    instance_type     => 't2.micro',
+    monitoring        => false,
+    ebs_optimized     => false,
+    tenancy           => 'default',
+    block_devices     => [
+      {
+        'delete_on_termination' => 'true',
+        'device_name'           => '/dev/sda1',
+        'volume_size'           => '8',
+      },
     ],
   }
 }
