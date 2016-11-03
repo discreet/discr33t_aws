@@ -23,6 +23,7 @@ class discr33t_aws::ec2 {
         'volume_size'           => '8',
       },
     ],
+    user_data                => template('discr33t_aws/user_data/base.sh.erb'),
   }
 
   ec2_instance { 'discr33t-master02':

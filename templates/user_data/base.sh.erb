@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e -x
+yum upgrade -y && yum update -y
+yum install epel-release -y
+rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+yum install puppet-agent-1.8.0 -y
+echo "
+table: Discr33tRestricted
+region: us-east-1
+" >> /etc/puppet-credstash.yaml
+
