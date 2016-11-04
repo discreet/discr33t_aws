@@ -8,4 +8,4 @@ echo "
 table: Discr33tRestricted
 region: us-east-1
 " >> /etc/puppet-credstash.yaml
-
+sed -i 's,PATH=$PATH:$HOME/bin,PATH=$PATH:$HOME/bin:/opt/puppetlabs/bin,g' /root/.bash_profile

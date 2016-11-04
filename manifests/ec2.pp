@@ -49,9 +49,10 @@ class discr33t_aws::ec2 {
         'volume_size'           => '8',
       },
     ],
+    user_data => template('discr33t_aws/user_data/base.sh.erb'),
   }
 
-  ec2_instance { 'discr33t-slave02':
+  ec2_instance { 'discr33t-slave01':
     ensure            => running,
     region            => 'us-east-1',
     availability_zone => 'us-east-1a',
@@ -71,9 +72,10 @@ class discr33t_aws::ec2 {
         'volume_size'           => '8',
       },
     ],
+    user_data => template('discr33t_aws/user_data/base.sh.erb'),
   }
 
-  ec2_instance { 'discr33t-slave01':
+  ec2_instance { 'discr33t-slave02':
     ensure            => running,
     region            => 'us-east-1',
     availability_zone => 'us-east-1b',
@@ -93,5 +95,6 @@ class discr33t_aws::ec2 {
         'volume_size'           => '8',
       },
     ],
+    user_data => template('discr33t_aws/user_data/base.sh.erb'),
   }
 }
