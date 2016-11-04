@@ -2,29 +2,29 @@ class discr33t_aws::destroy inherits discr33t_aws {
 
   contain '::discr33t_aws'
 
-  file { 'dynamodb-dir':
+  file { 'credstash-dir':
     ensure => directory,
-    path   => '/opt/dynamodb',
+    path   => '/opt/credstash',
     owner  => root,
     group  => root,
     mode   => '0755',
   }
 
-  file { 'destroy-dynamodb':
+  file { 'destroy-credstash':
     ensure  => file,
-    path    => '/opt/dynamodb/dynamodb_destroy.rb',
+    path    => '/opt/credstash/credstash_destroy.rb',
     owner   => root,
     group   => root,
     mode    => '0755',
-    content => template('discr33t_aws/dynamodb_destroy.rb.erb'),
-    require => File['dynamodb-dir'],
+    content => template('discr33t_aws/credstash_destroy.rb.erb'),
+    require => File['credstash-dir'],
   }
 
-  exec { 'destroy-dynamodb':
+  exec { 'destroy-credstash':
     path        => '/bin',
-    cwd         => '/opt/dynamodb',
-    command     => 'ruby dynamodb_destroy.rb',
-    subscribe   => File['destroy-dynamodb'],
+    cwd         => '/opt/credstash',
+    command     => 'ruby credstash_destroy.rb',
+    subscribe   => File['destroy-credstash'],
     refreshonly => true,
   }
 

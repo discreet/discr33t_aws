@@ -1,0 +1,151 @@
+require 'aws-sdk'
+
+dynamodb_client = Aws::DynamoDB::Client.new(
+  access_key_id: '<%= @aws_access_key %>',
+  secret_access_key: '<%= @aws_secret_key %>',
+  region: '<%= @aws_region %>'
+)
+
+kms_client = Aws::KMS::Client.new(
+  access_key_id: '<%= @aws_access_key %>',
+  secret_access_key: '<%= @aws_secret_key %>',
+  region: '<%= @aws_region %>'
+)
+
+exists = dynamodb_client.list_tables ()
+
+unless exists.table_names.include?('Discr33tRestricted')
+  dynamodb_client.create_table(
+    {
+      attribute_definitions:
+        [
+          {
+	    attribute_name: 'KeySchemaAttributeName',
+	    attribute_type: 'S',
+	  },
+        ],
+      table_name: 'Discr33tRestricted',
+      key_schema: [
+        {
+	  attribute_name: 'KeySchemaAttributeName',
+          key_type: 'HASH',
+        },
+      ],
+      provisioned_throughput: {
+        read_capacity_units: 1,
+        write_capacity_units: 1,
+      },
+    }
+  )
+  dynamodb_client.wait_until(:table_exists, table_name: 'Discr33tRestricted')
+
+  table_arn = dynamodb_client.describe_table(
+    {
+      table_name: 'Discr33tRestricted',
+    }
+  )
+end
+
+key_data = kms_client.list_aliases()
+
+key_list = []
+key_data.aliases.each do |key|
+  key_list << key.alias_name
+end
+
+unless key_list.include?('alias/Discr33tAdmin')
+  kms_data = kms_client.create_key(
+    {
+      policy: '{
+        "Id": "key-consolepolicy-2",
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "Enable IAM User Permissions",
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": [
+                "arn:aws:iam::949402414914:root"
+              ]
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+          },
+          {
+            "Sid": "Allow access for Key Administrators",
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": [
+                "arn:aws:iam::949402414914:role/Discr33tAdmin"
+              ]
+            },
+            "Action": [
+              "kms:Create*",
+              "kms:Describe*",
+              "kms:Enable*",
+              "kms:List*",
+              "kms:Put*",
+              "kms:Update*",
+              "kms:Revoke*",
+              "kms:Disable*",
+              "kms:Get*",
+              "kms:Delete*",
+              "kms:ScheduleKeyDeletion",
+              "kms:CancelKeyDeletion"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Sid": "Allow use of the key",
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": [
+                "arn:aws:iam::949402414914:role/Discr33tAdmin"
+              ]
+            },
+            "Action": [
+              "kms:Encrypt",
+              "kms:Decrypt",
+              "kms:ReEncrypt*",
+              "kms:GenerateDataKey*",
+              "kms:DescribeKey"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Sid": "Allow attachment of persistent resources",
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": [
+                "arn:aws:iam::949402414914:role/Discr33tAdmin"
+              ]
+            },
+            "Action": [
+              "kms:CreateGrant",
+              "kms:ListGrants",
+              "kms:RevokeGrant"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "Bool": {
+                "kms:GrantIsForAWSResource": true
+              }
+            }
+          }
+        ]
+      }',
+      description: 'KMS Master Key for Discr33tRestricted DynamoDB Table',
+      key_usage: 'ENCRYPT_DECRYPT',
+      origin: 'AWS_KMS'
+    }
+  )
+
+  key_arn = kms_data.key_metadata.arn
+
+  kms_client.create_alias (
+    {
+      alias_name: 'alias/Discr33tAdmin',
+      target_key_id: key_arn
+    }
+  )
+end
