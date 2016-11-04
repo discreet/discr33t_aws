@@ -1,4 +1,4 @@
-1. Put the path to Puppet in the PATH (/opt/puppetlabs/bin)
+1. ~~Symlinked Facter and Puppet to /usr/bin~~
 2. DNS entries
 3. CredStash (DynamoDB and KMS)
 4. IAM Policies
