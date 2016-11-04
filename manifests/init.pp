@@ -1,5 +1,9 @@
 class discr33t_aws {
 
+  $aws_region     = hiera('discr33t::region')
+  $aws_access_key = hiera('discr33t::access_key')
+  $aws_secret_key = hiera('discr33t::secret_key')
+
   package { ['epel-release',
              'gcc',
              'python-devel',
@@ -14,8 +18,15 @@ class discr33t_aws {
     provider => pip,
   } ->
 
+  package { 'system-rubies':
+    ensure   => latest,
+    name     => 'aws-sdk',
+    provider => gem,
+  } ->
+
   package { ['aws-sdk-core',
-             'retries']:
+             'retries',
+             'aws-sdk']:
     ensure   => latest,
     provider => puppet_gem,
   }
@@ -23,8 +34,8 @@ class discr33t_aws {
   file { 'aws-dir':
     ensure => directory,
     path   => '/root/.aws',
-    owner  => root,
-    group  => root,
+    owner  => vagrant,
+    group  => vagrant,
     mode   => '0700',
   }
 
@@ -35,9 +46,9 @@ class discr33t_aws {
 
   $cred_data = {
     'default' => {
-      'aws_access_key_id'     => hiera('discr33t::access_key'),
-      'aws_secret_access_key' => hiera('discr33t::secret_key'),
-      'region'                => 'us-east-1',
+      'aws_access_key_id'     => $aws_access_key,
+      'aws_secret_access_key' => $aws_secret_key,
+      'region'                => $aws_region,
     }
   }
    create_ini_settings($cred_data, $cred_default)

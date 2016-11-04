@@ -5,4 +5,5 @@ class discr33t_aws::build {
  include '::discr33t_aws::subnet'
  include '::discr33t_aws::securitygroup'
  include '::discr33t_aws::ec2'
+ include '::discr33t_aws::dynamodb'
 }

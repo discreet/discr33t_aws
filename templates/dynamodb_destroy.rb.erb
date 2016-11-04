@@ -1,0 +1,17 @@
+require 'aws-sdk'
+
+dynamodb_client = Aws::DynamoDB::Client.new(
+  access_key_id: '<%= @aws_access_key %>',
+  secret_access_key: '<%= @aws_secret_key %>',
+  region: '<%= @aws_region %>'
+)
+
+exists = dynamodb_client.list_tables ()
+
+if exists.table_names.include?('Discr33tRestricted')
+  dynamodb_client.delete_table(
+    {
+      table_name: "Discr33tRestricted",
+    }
+  )
+end

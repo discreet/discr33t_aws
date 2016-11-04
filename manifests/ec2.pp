@@ -2,7 +2,7 @@ class discr33t_aws::ec2 {
 
   ec2_instance { 'discr33t-master01':
     ensure                   => running,
-    region                   => 'us-east-1',
+    region                   => $discr33t_aws::aws_region,
     availability_zone        => 'us-east-1a',
     subnet                   => [
       'discr33t-publiczone01-sn'
@@ -28,7 +28,7 @@ class discr33t_aws::ec2 {
 
   ec2_instance { 'discr33t-master02':
     ensure                   => running,
-    region                   => 'us-east-1',
+    region                   => $discr33t_aws::aws_region,
     availability_zone        => 'us-east-1b',
     subnet                   => [
       'discr33t-publiczone02-sn'
@@ -54,7 +54,7 @@ class discr33t_aws::ec2 {
 
   ec2_instance { 'discr33t-slave01':
     ensure            => running,
-    region            => 'us-east-1',
+    region            => $discr33t_aws::aws_region,
     availability_zone => 'us-east-1a',
     subnet            => [
       'discr33t-privatezone01-sn'
@@ -77,7 +77,7 @@ class discr33t_aws::ec2 {
 
   ec2_instance { 'discr33t-slave02':
     ensure            => running,
-    region            => 'us-east-1',
+    region            => $discr33t_aws::aws_region,
     availability_zone => 'us-east-1b',
     subnet            => [
       'discr33t-privatezone02-sn'

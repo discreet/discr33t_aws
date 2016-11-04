@@ -1,6 +1,32 @@
-class discr33t_aws::destroy {
+class discr33t_aws::destroy inherits discr33t_aws {
 
   contain '::discr33t_aws'
+
+  file { 'dynamodb-dir':
+    ensure => directory,
+    path   => '/opt/dynamodb',
+    owner  => root,
+    group  => root,
+    mode   => '0755',
+  }
+
+  file { 'destroy-dynamodb':
+    ensure  => file,
+    path    => '/opt/dynamodb/dynamodb_destroy.rb',
+    owner   => root,
+    group   => root,
+    mode    => '0755',
+    content => template('discr33t_aws/dynamodb_destroy.rb.erb'),
+    require => File['dynamodb-dir'],
+  }
+
+  exec { 'destroy-dynamodb':
+    path        => '/bin',
+    cwd         => '/opt/dynamodb',
+    command     => 'ruby dynamodb_destroy.rb',
+    subscribe   => File['destroy-dynamodb'],
+    refreshonly => true,
+  }
 
   ec2_instance { ['discr33t-master01',
                       'discr33t-master02',
