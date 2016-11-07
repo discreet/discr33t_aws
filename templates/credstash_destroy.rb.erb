@@ -6,12 +6,48 @@ dynamodb_client = Aws::DynamoDB::Client.new(
   region: '<%= @aws_region %>'
 )
 
-exists = dynamodb_client.list_tables ()
+kms_client = Aws::KMS::Client.new(
+  access_key_id: '<%= @aws_access_key %>',
+  secret_access_key: '<%= @aws_secret_key %>',
+  region: '<%= @aws_region %>'
+)
 
-if exists.table_names.include?('Discr33tRestricted')
-  dynamodb_client.delete_table(
+dynamo_tables = <%= @dynamo_tables %>
+
+tables = dynamodb_client.list_tables ()
+
+dynamo_tables.each do |dynamo_table|
+  if tables.table_names.include?(dynamo_table)
+    dynamodb_client.delete_table(
+      {
+        table_name: dynamo_table,
+      }
+    )
+  end
+end
+
+kms_data = <%= @kms_keys %>
+
+key_aliases = []
+kms_data.each do |k,v|
+  key_aliases << "alias/#{v['key_alias']}"
+end
+
+key_arns = []
+key_aliases.each do |key_alias|
+  key_data = kms_client.describe_key(
     {
-      table_name: "Discr33tRestricted",
+      key_id: key_alias
+    }
+  )
+  key_arns << key_data.key_metadata.arn
+end
+
+key_arns.each do |key_delete|
+  kms_client.schedule_key_deletion(
+    {
+      key_id: key_delete,
+      pending_window_in_days: 7
     }
   )
 end

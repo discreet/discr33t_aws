@@ -3,6 +3,10 @@ class discr33t_aws {
   $aws_region     = hiera('discr33t::region')
   $aws_access_key = hiera('discr33t::access_key')
   $aws_secret_key = hiera('discr33t::secret_key')
+  $aws_vpc        = hiera('discr33t::vpc', '')
+  $aws_ami        = hiera('discr33t::ami', '')
+  $dynamo_tables  = hiera_array('discr33t::dynamo_tables', [])
+  $kms_keys       = hiera_hash('discr33t::kms_keys', {})
 
   package { ['epel-release',
              'gcc',
@@ -34,8 +38,8 @@ class discr33t_aws {
   file { 'aws-dir':
     ensure => directory,
     path   => '/root/.aws',
-    owner  => vagrant,
-    group  => vagrant,
+    owner  => root,
+    group  => root,
     mode   => '0700',
   }
 

@@ -1,4 +1,4 @@
-class discr33t_aws::securitygroup {
+class discr33t_aws::securitygroup inherits discr33t_aws {
 
   ec2_securitygroup { 'discr33t-master-sg':
     ensure      => present,
@@ -11,8 +11,8 @@ class discr33t_aws::securitygroup {
         'to_port'   => '22',
       },
     ],
-    region      => 'us-east-1',
-    vpc         => 'discr33t-vpc',
+    region      => $aws_region,
+    vpc         => $aws_vpc,
   }
 
   ec2_securitygroup { 'discr33t-slave-sg':
@@ -23,7 +23,7 @@ class discr33t_aws::securitygroup {
         'cidr'      => '10.0.0.0/16',
       },
     ],
-    region      => 'us-east-1',
-    vpc         => 'discr33t-vpc',
+    region      => $aws_region,
+    vpc         => $aws_vpc,
   }
 }
